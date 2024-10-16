@@ -29,17 +29,13 @@ public class fix_Repair {
 	private int id;
 	private String Fix_Number;
 	private String Fix_Accept_Account;
-	private Date Fix_Accept_Date;
+	private String Fix_Account_Name;
 	private Date Fix_Est_Date;
 	private Date Fix_Finish_Date;
 	private String Fix_Remark;
 	private int Fix_Level;
 	private String Fix_Key;
 	private String Fix_Draw;
-
-	private String Fix_Delay;
-
-	private String Log_Number;
 
 
 	
