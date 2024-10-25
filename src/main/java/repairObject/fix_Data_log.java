@@ -1,8 +1,11 @@
 package repairObject;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,9 +32,11 @@ public class fix_Data_log {
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	int id;
-	private String Log_Number;
-	private Date Ori_Date;
-	private Date Exten_Date;
-	private String Exten_Reassion;
+	public String Report_Extend_Log_Number;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
+	public LocalDateTime Ori_Date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
+	public LocalDateTime Exten_Date;
+	public String Exten_Reassion;
 	
 }

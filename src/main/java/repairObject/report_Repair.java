@@ -47,7 +47,7 @@ public class report_Repair {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
 	public LocalDateTime  Report_Esti_Date;
 	public String Report_Status;
-	public String Report_Fix_Delay;
+	public Boolean Report_Fix_Delay;
 	public String Report_Extend_Log_Number;
 
 }

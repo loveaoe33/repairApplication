@@ -1,8 +1,11 @@
 package repairObject;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,16 +29,17 @@ public class fix_Repair {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
-	private String Fix_Number;
-	private String Fix_Accept_Account;
-	private String Fix_Account_Name;
-	private Date Fix_Est_Date;
-	private Date Fix_Finish_Date;
-	private String Fix_Remark;
-	private int Fix_Level;
-	private String Fix_Key;
-	private String Fix_Draw;
+	public int id;
+	public String Fix_Number;
+	public String Fix_Accept_Account;
+	public String Fix_Account_Name;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
+	public LocalDateTime Fix_Est_Date;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
+	public LocalDateTime Fix_Finish_Date;
+	public String Fix_Remark;
+	public int Fix_Level;
+	public String Fix_Draw;
 
 
 	
