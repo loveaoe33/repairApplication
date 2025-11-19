@@ -37,6 +37,7 @@ public class fix_Repair {
 	public LocalDateTime Fix_Est_Date;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyyMMdd HH:mm:ss")
 	public LocalDateTime Fix_Finish_Date;
+	public String Fix_Status;
 	public String Fix_Remark;
 	public int Fix_Level;
 	public String Fix_Draw;

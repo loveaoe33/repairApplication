@@ -23,5 +23,7 @@ public interface fix_Repair_JPAInterface extends JpaRepository<fix_Repair, Long>
     @Transactional
  	@Query("Select r FROM fix_Repair r WHERE MONTH(r.Fix_Finish_Date) = MONTH(CURRENT_DATE) AND YEAR(r.Fix_Finish_Date) = YEAR(CURRENT_DATE)" )
 	List<fix_Repair> SelectFinishTable();
+	
+
     
 }

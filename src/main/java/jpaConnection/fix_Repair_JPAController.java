@@ -13,144 +13,136 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.x.protobuf.MysqlxCrud.Collection;
 
+import repairObject.FixSelectViewDTO;
+import repairObject.ReportSelectViewDTO;
 import repairObject.fix_Data_log;
 import repairObject.fix_Repair;
 import repairObject.report_Repair;
 
-
-
-
-
 @Service
 public class fix_Repair_JPAController {
 
-	
 	private final repair_Report_JPAInterface repair_Report_jPAInterface;
 	private final fix_Repair_JPAInterface fix_Repair_jPAInterface;
 	private final fix_Data_Log_JPAInterface fix_Data_Log_jPAInterface;
-	ObjectMapper mapper=new ObjectMapper();
-	
+	private final repair_SelectView_JPAInterface repair_SelectView_jPAInterface;
+	ObjectMapper mapper = new ObjectMapper();
+
 	@Autowired
-	public fix_Repair_JPAController(fix_Repair_JPAInterface fix_Repair_jPAInterface,repair_Report_JPAInterface repair_Report_jPAInterface,fix_Data_Log_JPAInterface fix_Data_Log_jPAInterface) {
-		this.repair_Report_jPAInterface=repair_Report_jPAInterface;		
-		this.fix_Repair_jPAInterface=fix_Repair_jPAInterface;
-		this.fix_Data_Log_jPAInterface=fix_Data_Log_jPAInterface;
+	public fix_Repair_JPAController(fix_Repair_JPAInterface fix_Repair_jPAInterface,
+			repair_Report_JPAInterface repair_Report_jPAInterface, fix_Data_Log_JPAInterface fix_Data_Log_jPAInterface,
+			repair_SelectView_JPAInterface repair_SelectView_jPAInterface) {
+		this.repair_Report_jPAInterface = repair_Report_jPAInterface;
+		this.fix_Repair_jPAInterface = fix_Repair_jPAInterface;
+		this.fix_Data_Log_jPAInterface = fix_Data_Log_jPAInterface;
+		this.repair_SelectView_jPAInterface = repair_SelectView_jPAInterface;
 	}
-	
-	public List<report_Repair> load_RepairStatus() {  //叫出報修紀錄
-		List<report_Repair> result=repair_Report_jPAInterface.findAll();
-		if(result.size()>0) {
-			System.out.println(result.get(0));
 
+	public List<report_Repair> load_RepairStatus() { // 叫出報修紀錄
+		List<report_Repair> result = repair_Report_jPAInterface.findAllOrderBy();
+		if (result.size() > 0) {
 			return result;
-		}else {
-			System.out.println("s"+result.get(0));
-
-			return null;
-
-		}
-		
-	}
-	public List<fix_Repair> load_RepairFinish() {  //叫出報修紀錄
-		List<fix_Repair> result=fix_Repair_jPAInterface.SelectFinishTable();
-		if(result.size()>0) {
-			System.out.println(result.get(0));
-			return result;
-		}else {
-			System.out.println("s"+result.get(0));
+		} else {
 			return null;
 		}
-		
 	}
-	
-	public List<report_Repair> load_DateRepairStatus() {  //叫出特定日期報修紀錄
-		return null;
+
+	public List<fix_Repair> load_RepairFinish() { // 叫出維修紀錄
+		List<fix_Repair> result = fix_Repair_jPAInterface.SelectFinishTable();
+		if (result.size() > 0) {
+			return result;
+		} else {
+			return null;
+		}
 	}
-	
-	public String insert_repair_Report(report_Repair report_Repair) { //新增報修單 OK
+
+	public List<report_Repair> load_DateReportList(LocalDateTime start, LocalDateTime end) { // 叫出特定日期清單
 		try {
-			report_Repair result= repair_Report_jPAInterface.save(report_Repair);
+			List<report_Repair> data = repair_Report_jPAInterface.findDateOrderBy(start, end);
+			return data;
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+
+	public List<ReportSelectViewDTO> load_DateReportStatus(String Emp_Accoumt, LocalDateTime Start, LocalDateTime End) { // 叫出特定日期報修紀錄
+		try {
+			List<ReportSelectViewDTO> data = repair_SelectView_jPAInterface.QueryReportHistory(Emp_Accoumt, Start, End);
+			return data;
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+
+	public List<FixSelectViewDTO> load_DateFixStatus(String Emp_Accoumt, LocalDateTime Start, LocalDateTime End) { // 叫出特定日期維修紀錄
+		try {
+			List<FixSelectViewDTO> data = repair_SelectView_jPAInterface.QueryFixHistory(Emp_Accoumt, Start, End);
+			return data;
+		} catch (DataAccessException e) {
+			return null;
+		}
+	}
+
+	public String insert_repair_Report(report_Repair report_Repair) { // 新增報修單 OK
+		try {
+			report_Repair result = repair_Report_jPAInterface.save(report_Repair);
 			return "Sucess";
-			
-		}catch(DataAccessException e) {
-			
-			System.out.print(e);
-            return "fail";
+
+		} catch (DataAccessException e) {
+			return "fail";
 		}
-		
 	}
-	
-	public String delete_repair_Report(Long List_Id) {   //刪除報修單 OK
+
+	public String delete_repair_Report(Long List_Id) { // 刪除報修單 OK
 		try {
-			
 			repair_Report_jPAInterface.deleteById(List_Id);
 			return "Sucess";
-		}catch(DataAccessException e) {
+		} catch (DataAccessException e) {
 
 			return "fail";
 		}
-		
 	}
-	
-	public String accept_Repair(String ListNumber,String AccertEmp, LocalDateTime AcceptDate, LocalDateTime EstiDate ) {  //接受報修單 OK
-		try {
-         
-			int Rows=repair_Report_jPAInterface.AcceptRepair(ListNumber,AccertEmp,AcceptDate,EstiDate);
-			return  (Rows>0)? "Sucess": "fail";
-		}catch(DataAccessException e) {	
-			System.out.print("accept_Repair錯誤"+e);
-			System.out.print(e);
-            return "fail";
-		}
-	}
-	
-	
-	
-	public String insert_fix_Repair(fix_Repair fix_repair) {   //新增報修紀錄
-		try {
-	      
-			fix_Repair result= fix_Repair_jPAInterface.save(fix_repair);
-			int Rows=fix_Repair_jPAInterface.UpdateRepairTable("Finish",false,fix_repair.getFix_Number(),"");
-			return  (Rows>0)? "Sucess": "fail";
-		}catch(DataAccessException e) {	
-			System.out.print("insert_fix_Repair錯誤"+e);
-            return "fail";
-		}
-		
 
-	}
-	
-	public String insert_fix_Repair_Replay(fix_Repair fix_repair,fix_Data_log fix_repair_log ) {   //新增逾時紀錄
+	public String accept_Repair(String AcceptTtpe, String ListNumber, String AccertEmp, LocalDateTime AcceptDate,
+			LocalDateTime EstiDate) { // 接受報修單 OK
 		try {
-	      
-			fix_Repair result= fix_Repair_jPAInterface.save(fix_repair);
+			int Rows = repair_Report_jPAInterface.AcceptRepair(AcceptTtpe, ListNumber, AccertEmp, AcceptDate, EstiDate);
+			return (Rows > 0) ? "Sucess" : "fail";
+		} catch (DataAccessException e) {
+			return "fail";
+		}
+	}
+
+	public String insert_fix_Repair(fix_Repair fix_repair) { // 新增報修紀錄
+		try {
+			fix_Repair result = fix_Repair_jPAInterface.save(fix_repair);
+			int Rows = fix_Repair_jPAInterface.UpdateRepairTable("Finish", false, fix_repair.getFix_Number(), "");
+			return (Rows > 0) ? "Sucess" : "fail";
+		} catch (DataAccessException e) {
+			return "fail";
+		}
+	}
+
+	public String insert_fix_Repair_Replay(fix_Repair fix_repair, fix_Data_log fix_repair_log) { // 新增逾時紀錄
+		try {
+			fix_Repair result = fix_Repair_jPAInterface.save(fix_repair);
 			fix_Data_Log_jPAInterface.save(fix_repair_log);
-			int Rows=fix_Repair_jPAInterface.UpdateRepairTable("Finish",true,fix_repair.getFix_Number(),fix_repair_log.getReport_Extend_Log_Number());
-			return  (Rows>0)? "Sucess": "fail";
-		}catch(DataAccessException e) {	
-			System.out.print("insert_fix_Repair_Replay錯誤"+e);
-            return "fail";
+			int Rows = fix_Repair_jPAInterface.UpdateRepairTable("Finish", true, fix_repair.getFix_Number(),
+					fix_repair_log.getReport_Extend_Log_Number());
+			return (Rows > 0) ? "Sucess" : "fail";
+		} catch (DataAccessException e) {
+			return "fail";
 		}
-		
-
 	}
-	
-	
-	public String insert_fix_Repair_Delay(fix_Repair fix_repair) {   //新增預期報修紀錄
-		fix_Repair result= fix_Repair_jPAInterface.save(fix_repair);
-	   return "S";	
-	}
-	
 
-	
-	public String select_fix_Data_Log() {//調閱報表
-		
+	public String insert_fix_Repair_Delay(fix_Repair fix_repair) { // 新增預期報修紀錄
+		fix_Repair result = fix_Repair_jPAInterface.save(fix_repair);
 		return "S";
 	}
-	
-	
-	
-	
-	
+
+	public String select_fix_Data_Log() {// 調閱報表
+		return "S";
+	}
 }
